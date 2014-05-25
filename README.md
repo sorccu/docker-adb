@@ -64,6 +64,7 @@ Where `x.x.x.x` is the server host machine.
 
 * Need to be aware of IP addresses
 * Higher latency
+* You'll need to make other ports (e.g. from `adb forward`) accessible yourself
 
 ## Thanks
 
