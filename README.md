@@ -27,11 +27,13 @@ docker run --rm -ti --net container:adbd ubuntu nc localhost 5037 <<< 000chost:d
 ```
 
 **Pros:**
+
 * No port redirection required
 * No need to look up IP addresses
 * `adb forward` works without any tricks
 
 **Cons:**
+
 * Cannot use bridged (or any other) network on the client container
 * Only works if the server and client containers run on the same machine
 
@@ -54,10 +56,12 @@ docker run --rm -ti sorccu/adb -H x.x.x.x -P 5037 devices
 Where `x.x.x.x` is the server host machine.
 
 **Pros:**
+
 * Scales better (can use any number of hosts/clients)
 * No network limitations
 
 **Cons:**
+
 * Need to be aware of IP addresses
 * Higher latency
 
