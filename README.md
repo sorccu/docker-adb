@@ -19,13 +19,13 @@ This usage pattern shares the ADB server container's network with ADB client con
 
 Start the server:
 
-```bash
+```
 docker run -d --privileged -v /dev/bus/usb:/dev/bus/usb --name adbd sorccu/adb
 ```
 
 Then on the same machine:
 
-```bash
+```
 docker run --rm -ti --net container:adbd sorccu/adb devices
 docker run --rm -ti --net container:adbd ubuntu nc localhost 5037 <<< 000chost:devices
 ```
@@ -47,13 +47,13 @@ This usage pattern works best when you want to access the ADB server from a remo
 
 Start the server:
 
-```bash
+```
 docker run -d --privileged -v /dev/bus/usb:/dev/bus/usb --name adbd -p 5037:5037 sorccu/adb
 ```
 
 Then on the client host:
 
-```bash
+```
 docker run --rm -ti sorccu/adb -H x.x.x.x -P 5037 devices
 ```
 
