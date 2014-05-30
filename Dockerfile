@@ -23,6 +23,11 @@ RUN wget --progress=dot:giga -O /opt/adt.zip \
 RUN echo '#!/bin/sh\n/opt/adt/sdk/platform-tools/adb "$@"' > /usr/local/bin/adb && \
     chmod +x /usr/local/bin/adb
 
+# Set up insecure default key
+RUN mkdir -m 0750 /.android
+ADD files/insecure_shared_adbkey /.android/adbkey
+ADD files/insecure_shared_adbkey.pub /.android/adbkey.pub
+
 # Clean up
 RUN apt-get -y --purge remove wget unzip && \
     apt-get -y autoremove && \

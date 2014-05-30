@@ -7,6 +7,10 @@ This repository contains a [Dockerfile](https://www.docker.io/) for the [Android
 * The container needs extended privileges for USB access
 * The host's `/dev/bus/usb` must be mounted on the container
 
+## Security
+
+The container is preloaded with an RSA key for authentication, so that you won't have to accept a new key on the device every time you run the container (normally the key is generated on-demand by the adb binary). While convenient, it means that your device will be accessible over ADB to others who possess the key. You can supply your own keys by using `-v /your/key_folder:/.android` with `docker run`.
+
 ## Usage
 
 ### Pattern 1 - Shared network on the same machine (easy)
