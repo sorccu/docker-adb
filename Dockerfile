@@ -15,13 +15,8 @@ RUN wget --progress=dot:giga -O /opt/adt.zip \
       http://dl.google.com/android/adt/22.6.2/adt-bundle-linux-x86_64-20140321.zip && \
     unzip /opt/adt.zip adt-bundle-linux-x86_64-20140321/sdk/platform-tools/adb -d /opt && \
     mv /opt/adt-bundle-linux-x86_64-20140321 /opt/adt && \
-    rm /opt/adt.zip
-
-# Ctrl+C will not work unless ADB is run in a shell. We also need to use both
-# CMD and ENTRYPOINT for idiomatic style (i.e. passing arguments directly to
-# the adb binary). A simple wrapper script will allow us to do that.
-RUN echo '#!/bin/sh\n/opt/adt/sdk/platform-tools/adb "$@"' > /usr/local/bin/adb && \
-    chmod +x /usr/local/bin/adb
+    rm /opt/adt.zip && \
+    ln -s /opt/adt/sdk/platform-tools/adb /usr/local/bin/adb
 
 # Set up insecure default key
 RUN mkdir -m 0750 /.android
@@ -37,7 +32,6 @@ RUN apt-get -y --purge remove wget unzip && \
 # Expose default ADB port
 EXPOSE 5037
 
-# Start the server by default
-CMD ["-a", "-P", "5037", "fork-server", "server"]
-
-ENTRYPOINT ["/usr/local/bin/adb"]
+# Start the server by default. This needs to run in a shell or Ctrl+C won't
+# work.
+CMD /usr/local/bin/adb -a -P 5037 fork-server server

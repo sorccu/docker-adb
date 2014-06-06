@@ -26,7 +26,7 @@ docker run -d --privileged -v /dev/bus/usb:/dev/bus/usb --name adbd sorccu/adb
 Then on the same machine:
 
 ```
-docker run --rm -ti --net container:adbd sorccu/adb devices
+docker run --rm -ti --net container:adbd sorccu/adb adb devices
 docker run --rm -ti --net container:adbd ubuntu nc localhost 5037 <<< 000chost:devices
 ```
 
@@ -54,7 +54,7 @@ docker run -d --privileged -v /dev/bus/usb:/dev/bus/usb --name adbd -p 5037:5037
 Then on the client host:
 
 ```
-docker run --rm -ti sorccu/adb -H x.x.x.x -P 5037 devices
+docker run --rm -ti sorccu/adb -H x.x.x.x -P 5037 adb devices
 ```
 
 Where `x.x.x.x` is the server host machine.
