@@ -12,9 +12,9 @@ RUN dpkg --add-architecture i386 && \
 
 # Install ADB
 RUN wget --progress=dot:giga -O /opt/adt.zip \
-      http://dl.google.com/android/adt/adt-bundle-linux-x86_64-20140624.zip && \
-    unzip /opt/adt.zip adt-bundle-linux-x86_64-20140624/sdk/platform-tools/adb -d /opt && \
-    mv /opt/adt-bundle-linux-x86_64-20140624 /opt/adt && \
+      http://dl.google.com/android/adt/adt-bundle-linux-x86_64-20140702.zip && \
+    unzip /opt/adt.zip adt-bundle-linux-x86_64-20140702/sdk/platform-tools/adb -d /opt && \
+    mv /opt/adt-bundle-linux-x86_64-20140702 /opt/adt && \
     rm /opt/adt.zip && \
     ln -s /opt/adt/sdk/platform-tools/adb /usr/local/bin/adb
 
