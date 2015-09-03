@@ -54,7 +54,7 @@ docker run -d --privileged -v /dev/bus/usb:/dev/bus/usb --name adbd -p 5037:5037
 Then on the client host:
 
 ```
-docker run --rm -ti sorccu/adb -H x.x.x.x -P 5037 adb devices
+docker run --rm -ti sorccu/adb adb -H x.x.x.x -P 5037 devices
 ```
 
 Where `x.x.x.x` is the server host machine.
