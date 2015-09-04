@@ -27,7 +27,7 @@ Then on the same machine:
 
 ```
 docker run --rm -ti --net container:adbd sorccu/adb adb devices
-docker run --rm -ti --net container:adbd ubuntu nc localhost 5037 <<< 000chost:devices
+docker run --rm -i --net container:adbd ubuntu nc localhost 5037 <<<000chost:devices
 ```
 
 **Pros:**
