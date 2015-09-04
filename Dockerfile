@@ -28,4 +28,4 @@ ENV PATH $PATH:/opt/android-sdk-linux/platform-tools:/opt/android-sdk-linux/tool
 
 # Start the server by default. This needs to run in a shell or Ctrl+C won't
 # work.
-CMD /usr/local/bin/adb -a -P 5037 fork-server server
+CMD adb -a -P 5037 fork-server server
