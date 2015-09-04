@@ -13,6 +13,8 @@ The container is preloaded with an RSA key for authentication, so that you won't
 
 ## Usage
 
+There are various ways to use this image. Some of the possible usage patterns are listed below. It may sometimes be possible to mix them depending on the case.
+
 ### Pattern 1 - Shared network on the same machine (easy)
 
 This usage pattern shares the ADB server container's network with ADB client containers.
@@ -34,14 +36,79 @@ docker run --rm -i --net container:adbd ubuntu nc localhost 5037 <<<000chost:dev
 
 * No port redirection required
 * No need to look up IP addresses
-* `adb forward` works without any tricks
+* `adb forward` works without any tricks (but forwards will only be accessible to the client containers)
 
 **Cons:**
 
 * Cannot use bridged (or any other) network on the client container
 * Only works if the server and client containers run on the same machine
 
-### Pattern 2 - Remote client
+### Pattern 2 - Host network (easy but feels wrong)
+
+This usage pattern binds the ADB server directly to the host.
+
+Start the server:
+
+```
+docker run -d --privileged --net host -v /dev/bus/usb:/dev/bus/usb --name adbd sorccu/adb
+```
+
+Then on the same machine:
+
+```
+docker run --rm -ti --net host sorccu/adb adb devices
+docker run --rm -i --net host ubuntu nc localhost 5037 <<<000chost:devices
+```
+
+Or on another machine:
+
+```
+docker run --rm -ti sorccu/adb adb -H x.x.x.x -P 5037 devices
+```
+
+**Pros:**
+
+* No port redirection required
+* No need to look up IP addresses
+* `adb forward` works without any tricks (and forwards are visible from other machines)
+* No docker network overhead
+* ADB server visible from other machines
+
+**Cons:**
+
+* ADB server visible from other machines unless the startup command is modified
+* Client containers must always use host networking or know the machine's IP address
+
+### Pattern 3 - Linked containers on the same machine (can be annoying)
+
+This usage pattern shares the ADB server container's network with ADB client containers.
+
+Start the server:
+
+```
+docker run -d --privileged -v /dev/bus/usb:/dev/bus/usb --name adbd sorccu/adb
+```
+
+Then on the same machine:
+
+```
+docker run --rm -ti --link adbd:adbd sorccu/adb \
+  sh -c 'adb -H $ADBD_PORT_5037_TCP_ADDR -P 5037 devices'
+```
+
+**Pros:**
+
+* No port redirection required
+* No need to manually look up IP addresses
+* `adb forward` works without any tricks (but forwards will only be accessible to the client containers over the designated IP)
+
+**Cons:**
+
+* Need to always pass the server IP to `adb` with `-H $ADBD_PORT_5037_TCP_ADDR`
+* Need to be careful when running the container so that variables get replaced inside the container and not in the calling shell
+* Only works if the server and client containers run on the same machine
+
+### Pattern 4 - Remote client
 
 This usage pattern works best when you want to access the ADB server from a remote host.
 
