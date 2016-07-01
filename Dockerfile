@@ -1,11 +1,6 @@
 FROM ubuntu:14.04
 MAINTAINER Simo Kinnunen
 
-# Set up insecure default key
-RUN mkdir -m 0750 /.android
-ADD files/insecure_shared_adbkey /.android/adbkey
-ADD files/insecure_shared_adbkey.pub /.android/adbkey.pub
-
 # Note: ADB needs 32-bit libs
 RUN export DEBIAN_FRONTEND=noninteractive && \
     dpkg --add-architecture i386 && \
@@ -16,9 +11,13 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
       https://dl.google.com/android/android-sdk_r24.0.2-linux.tgz && \
     tar xzf /opt/adt.tgz -C /opt && \
     rm /opt/adt.tgz && \
-    echo y | /opt/android-sdk-linux/tools/android update sdk --filter platform-tools --no-ui --force && \
+    echo y|/opt/android-sdk-linux/tools/android update sdk --no-ui --all --filter platform-tools && \    
     apt-get clean && \
     rm -rf /var/cache/apt/*
+
+# Set up insecure default key
+ADD files/insecure_shared_adbkey /root/.android/adbkey
+ADD files/insecure_shared_adbkey.pub /root/.android/adbkey.pub
 
 # Expose default ADB port
 EXPOSE 5037
