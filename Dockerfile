@@ -11,7 +11,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
       https://dl.google.com/android/android-sdk_r24.0.2-linux.tgz && \
     tar xzf /opt/adt.tgz -C /opt && \
     rm /opt/adt.tgz && \
-    echo y | /opt/android-sdk-linux/tools/android update sdk --filter platform-tools --no-ui --force && \
+    echo y|/opt/android-sdk-linux/tools/android update sdk --no-ui --all --filter platform-tools && \    
     apt-get clean && \
     rm -rf /var/cache/apt/*
 
