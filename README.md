@@ -9,7 +9,7 @@ This repository contains a [Dockerfile](https://www.docker.io/) for the [Android
 
 ## Security
 
-The container is preloaded with an RSA key for authentication, so that you won't have to accept a new key on the device every time you run the container (normally the key is generated on-demand by the adb binary). While convenient, it means that your device will be accessible over ADB to others who possess the key. You can supply your own keys by using `-v /your/key_folder:/.android` with `docker run`.
+The container is preloaded with an RSA key for authentication, so that you won't have to accept a new key on the device every time you run the container (normally the key is generated on-demand by the adb binary). While convenient, it means that your device will be accessible over ADB to others who possess the key. You can supply your own keys by using `-v /your/key_folder:/root/.android` with `docker run`.
 
 ## Usage
 
