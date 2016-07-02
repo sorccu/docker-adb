@@ -1,31 +1,33 @@
-FROM ubuntu:14.04
-MAINTAINER Simo Kinnunen
+FROM alpine:3.4
 
 # Set up insecure default key
-RUN mkdir -m 0750 /.android
-ADD files/insecure_shared_adbkey /.android/adbkey
-ADD files/insecure_shared_adbkey.pub /.android/adbkey.pub
+RUN mkdir -m 0750 /root/.android
+ADD files/insecure_shared_adbkey /root/.android/adbkey
+ADD files/insecure_shared_adbkey.pub /root/.android/adbkey.pub
+ADD files/update-platform-tools.sh /usr/local/bin/update-platform-tools.sh
 
-# Note: ADB needs 32-bit libs
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    dpkg --add-architecture i386 && \
-    apt-get update && \
-    apt-get -y install libc6:i386 libstdc++6:i386 && \
-    apt-get -y install wget unzip openjdk-7-jre-headless && \
-    wget --progress=dot:giga -O /opt/adt.tgz \
-      https://dl.google.com/android/android-sdk_r24.0.2-linux.tgz && \
-    tar xzf /opt/adt.tgz -C /opt && \
-    rm /opt/adt.tgz && \
-    echo y | /opt/android-sdk-linux/tools/android update sdk --filter platform-tools --no-ui --force && \
-    apt-get clean && \
-    rm -rf /var/cache/apt/*
+RUN set -xeo pipefail && \
+    apk update && \
+    apk add wget ca-certificates && \
+    wget -O "/etc/apk/keys/sgerrand.rsa.pub" \
+      "https://raw.githubusercontent.com/andyshinn/alpine-pkg-glibc/master/sgerrand.rsa.pub" && \
+    wget -O "/tmp/glibc.apk" \
+      "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-2.23-r3.apk" && \
+    wget -O "/tmp/glibc-bin.apk" \
+      "https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-bin-2.23-r3.apk" && \
+    apk add "/tmp/glibc.apk" "/tmp/glibc-bin.apk" && \
+    rm "/etc/apk/keys/sgerrand.rsa.pub" && \
+    rm "/root/.wget-hsts" && \
+    rm "/tmp/glibc.apk" "/tmp/glibc-bin.apk" && \
+    rm -r /var/cache/apk/APKINDEX.* && \
+    /usr/local/bin/update-platform-tools.sh
 
 # Expose default ADB port
 EXPOSE 5037
 
 # Set up PATH
-ENV PATH $PATH:/opt/android-sdk-linux/platform-tools:/opt/android-sdk-linux/tools
+ENV PATH $PATH:/opt/platform-tools
 
 # Start the server by default. This needs to run in a shell or Ctrl+C won't
 # work.
-CMD adb -a -P 5037 fork-server server
+CMD adb -a -P 5037 server nodaemon

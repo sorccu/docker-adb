@@ -1,6 +1,12 @@
 # docker-adb
 
-This repository contains a [Dockerfile](https://www.docker.io/) for the [Android Debug Bridge](http://developer.android.com/tools/help/adb.html).
+This repository contains a [Dockerfile](https://www.docker.io/) for the [Android Debug Bridge](http://developer.android.com/tools/help/adb.html). It gives you access to platform tools such as `adb` and `fastboot`.
+
+## Changes
+
+* _2016-07-02_ The image now uses [Alpine](https://hub.docker.com/_/alpine/) as the base image, making it way smaller. Furthermore, downloading the platform tools is now done in a more cunning way, further removing almost all dependencies and reducing image size. Only platform-tools are now included.
+* _2016-07-02_ Due to internal ADB changes our previous start command no longer works in the latest version. The command has been updated, but if you were specifying it yourself, make sure you're using `adb -a -P 5037 server nodaemon`. Do NOT use the `fork-server` argument anymore.
+* _2016-07-02_ The `.android` directory path has been fixed. Thanks to @alexislg2 for spotting it!
 
 ## Gotchas
 
@@ -9,11 +15,21 @@ This repository contains a [Dockerfile](https://www.docker.io/) for the [Android
 
 ## Security
 
-The container is preloaded with an RSA key for authentication, so that you won't have to accept a new key on the device every time you run the container (normally the key is generated on-demand by the adb binary). While convenient, it means that your device will be accessible over ADB to others who possess the key. You can supply your own keys by using `-v /your/key_folder:/.android` with `docker run`.
+The container is preloaded with an RSA key for authentication, so that you won't have to accept a new key on the device every time you run the container (normally the key is generated on-demand by the adb binary). While convenient, it means that your device will be accessible over ADB to others who possess the key. You can supply your own keys by using `-v /your/key_folder:/root/.android` with `docker run`.
+
+## Updating the platform tools manually
+
+If you feel like the platform tools are out of date and can't wait for a new image, you can update the platform tools with the following command:
+
+```sh
+update-platform-tools.sh
+```
+
+It's in `/usr/local/bin` and therefore already in `$PATH`.
 
 ## Usage
 
-There are various ways to use this image. Some of the possible usage patterns are listed below. It may sometimes be possible to mix them depending on the case.
+There are various ways to use this image. Some of the possible usage patterns are listed below. It may sometimes be possible to mix them depending on the case. Also, you don't have to limit yourself to the patterns mentioned here. If you can find another way that works for you, go ahead.
 
 ### Pattern 1 - Shared network on the same machine (easy)
 
@@ -140,6 +156,8 @@ Where `x.x.x.x` is the server host machine.
 ## Thanks
 
 * [Jérôme Petazzoni's post on the docker-user forum explaining USB device access](https://groups.google.com/d/msg/docker-user/UsekCwA1CSI/RtgmyJOsRtIJ)
+* @sgerrand for [sgerrand/alpine-pkg-glibc](https://github.com/sgerrand/alpine-pkg-glibc)
+* @frol for [frol/docker-alpine-glibc](https://github.com/frol/docker-alpine-glibc)
 
 ## License
 
