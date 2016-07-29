@@ -8,7 +8,7 @@ ADD files/update-platform-tools.sh /usr/local/bin/update-platform-tools.sh
 
 RUN set -xeo pipefail && \
     apk update && \
-    apk add wget ca-certificates && \
+    apk add wget ca-certificates tini && \
     wget -O "/etc/apk/keys/sgerrand.rsa.pub" \
       "https://raw.githubusercontent.com/andyshinn/alpine-pkg-glibc/master/sgerrand.rsa.pub" && \
     wget -O "/tmp/glibc.apk" \
@@ -28,6 +28,8 @@ EXPOSE 5037
 # Set up PATH
 ENV PATH $PATH:/opt/platform-tools
 
-# Start the server by default. This needs to run in a shell or Ctrl+C won't
-# work.
-CMD adb -a -P 5037 server nodaemon
+# Hook up tini as the default init system for proper signal handling
+ENTRYPOINT ["/sbin/tini", "--"]
+
+# Start the server by default
+CMD ["adb", "-a", "-P", "5037", "server", "nodaemon"]
