@@ -1,0 +1,16 @@
+[Unit]
+Description=Create ADB daemon docker container
+Requires=docker.service adb-image.service
+After=docker.service adb-image.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=-/usr/bin/docker kill adbd
+ExecStartPre=-/usr/bin/docker rm adbd
+ExecStart=/usr/bin/docker create \
+  --name adbd \
+  --privileged \
+  --net host \
+  -v /dev/bus/usb:/dev/bus/usb \
+  sorccu/adb:latest

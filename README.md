@@ -153,6 +153,34 @@ Where `x.x.x.x` is the server host machine.
 * Higher latency
 * You'll need to make other ports (e.g. from `adb forward`) accessible yourself
 
+## Systemd units
+
+Sample [systemd](https://www.freedesktop.org/wiki/Software/systemd/) units are provided in the [systemd/](systemd/) folder.
+
+| Unit | Role | Purpose |
+|------|------|---------|
+| [adb-image.service](systemd/adb-image.service) | Support | Pulls the image from Docker Hub. |
+| [adbd-container.service](systemd/adbd-container.service) | Support | Creates a container for the ADB daemon based on the adb image, but doesn't run it. |
+| [adbd.service](systemd/adbd.service) | Primary | Runs the prepared ADB daemon container and makes sure it stays alive. |
+
+This 3-unit configuration, while slightly complex, offers superior benefits such as incredibly fast start time on failure since everything has already been prepared for `adbd.service` so that it doesn't have to do any extra work. The adb image will only get pulled once at boot time instead of at every launch (or manually by calling `systemctl restart adb-image`, which will also restart the other units).
+
+Copy the units to `/etc/systemd/system/` on your target machine.
+
+Then, enable `adbd.service` so that it starts automatically after booting the machine:
+
+```sh
+systemctl enable adbd
+```
+
+Finally, either reboot or start the service manually:
+
+```sh
+systemctl start adbd
+```
+
+If you change the units, don't forget to run `systemctl daemon-reload` or they won't get updated.
+
 ## Thanks
 
 * [Jérôme Petazzoni's post on the docker-user forum explaining USB device access](https://groups.google.com/d/msg/docker-user/UsekCwA1CSI/RtgmyJOsRtIJ)

@@ -1,0 +1,12 @@
+[Unit]
+Description=ADB daemon
+Requires=docker.service adbd-container.service
+After=docker.service adbd-container.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker start -a adbd
+ExecStop=/usr/bin/docker exec adbd adb kill-server
+
+[Install]
+WantedBy=multi-user.target

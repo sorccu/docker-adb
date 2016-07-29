@@ -1,0 +1,9 @@
+[Unit]
+Description=Pull ADB docker image
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/docker pull sorccu/adb:latest
